@@ -1,9 +1,9 @@
 import unittest
 
-from htmlnode import HTMLNode, ParentNode, LeafNode
+from htmlnode import *
 
 
-class TestHTMLNode(unittest.TestCase):
+class Test_HTMLNode(unittest.TestCase):
     def test_defaults(self):
         node = HTMLNode()
         self.assertEqual(node.tag, None)
@@ -29,7 +29,7 @@ class TestHTMLNode(unittest.TestCase):
 
 
 
-class TestParentNode(unittest.TestCase):
+class Test_ParentNode(unittest.TestCase):
     def test_defaults(self):
         leaf = LeafNode("", "")
         node = ParentNode("html", [leaf])
@@ -77,7 +77,7 @@ class TestParentNode(unittest.TestCase):
 
 
 
-class TestLeafNode(unittest.TestCase):
+class Test_LeafNode(unittest.TestCase):
     def test_defaults(self):
         leaf = LeafNode("", "")
         self.assertEqual(leaf.tag, "")

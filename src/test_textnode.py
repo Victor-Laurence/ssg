@@ -1,9 +1,9 @@
 import unittest
 
-from textnode import TextNode, TextType
+from textnode import *
 
 
-class TestTextNode(unittest.TestCase):
+class Test_TextNode(unittest.TestCase):
     def test_eq(self):
         node = TextNode("This is a text node", TextType.BOLD)
         node2 = TextNode("This is a text node", TextType.BOLD)
@@ -22,6 +22,9 @@ class TestTextNode(unittest.TestCase):
         node = TextNode("This is a text node", TextType.BOLD)
         self.assertEqual(str(node), "TextNode(This is a text node, bold)")
 
+
+
+class Test_TextNode_To_HTML(unittest.TestCase):
     def test_no_type_to_html_node(self):
         node = TextNode("This is a no type node", None)
         self.assertRaises(TypeError, node.to_html_node)
@@ -53,6 +56,81 @@ class TestTextNode(unittest.TestCase):
     def test_image_to_html_node(self):
         node = TextNode("This is a image node", TextType.IMAGE, "https://www.boot.dev/img/bootdev-logo-full-small.webp")
         self.assertEqual(node.to_html_node().to_html(), '<img src="https://www.boot.dev/img/bootdev-logo-full-small.webp" alt="This is a image node" />')
+
+
+
+class Test_Split_Nodes_Delimiter(unittest.TestCase):
+    def test_non_text_node(self):
+        node = TextNode("This is bold text", TextType.BOLD)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+        self.assertEqual(new_nodes, [TextNode("This is bold text", TextType.BOLD)])
+
+
+    def test_bold_node(self):
+        node = TextNode("This is text node with **bold text** inside", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(new_nodes, [
+            TextNode("This is text node with ", TextType.TEXT),
+            TextNode("bold text", TextType.BOLD),
+            TextNode(" inside", TextType.TEXT),
+        ])
+    
+    def test_italic_node(self):
+        node = TextNode("This is text node with *italic text* inside", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "*", TextType.ITALIC)
+        self.assertEqual(new_nodes, [
+            TextNode("This is text node with ", TextType.TEXT),
+            TextNode("italic text", TextType.ITALIC),
+            TextNode(" inside", TextType.TEXT),
+        ])
+
+    def test_code_node(self):
+        node = TextNode("This is text node with a `code block` inside", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+        self.assertEqual(new_nodes, [
+            TextNode("This is text node with a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" inside", TextType.TEXT),
+        ])
+
+    def test_delim_bold_double(self):
+        node = TextNode("This is text with a **bolded** word and **another**", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertListEqual(
+            [
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("bolded", TextType.BOLD),
+                TextNode(" word and ", TextType.TEXT),
+                TextNode("another", TextType.BOLD),
+            ],
+            new_nodes,
+        )
+
+    def test_delim_bold_multiword(self):
+        node = TextNode("This is text with a **bolded word** and **another**", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertListEqual(
+            [
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("bolded word", TextType.BOLD),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("another", TextType.BOLD),
+            ],
+            new_nodes,
+        )
+
+    def test_delim_bold_and_italic(self):
+        node = TextNode("**bold** and *italic*", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        new_nodes = split_nodes_delimiter(new_nodes, "*", TextType.ITALIC)
+        self.assertListEqual(
+            [
+                TextNode("bold", TextType.BOLD),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+            ],
+            new_nodes,
+        )
 
 
 
