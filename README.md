@@ -1,4 +1,21 @@
 # Starting http server on port 8888
-Using the WSL terminal, navigate to the public directory
-cd public
+Using the WSL terminal, navigate to the public directory:
 python3 -m http.server 8888
+
+# Running the script
+Using the WSL terminal, within the root directory:
+./main.sh
+
+# How the SSG works
+Here's a rough outline of what this static site generator will do when it runs:
+
+1. Delete everything in the /public directory.
+2. Copy any static assets (HTML template, images, CSS, etc.) to the /public directory.
+3. Generate an HTML file for each Markdown file in the /content directory. For each Markdown file:
+ a. Open the file and read its contents.
+ b. Split the markdown into "blocks" (e.g. paragraphs, headings, lists, etc.).
+ c. Convert each block into a tree of HTMLNode objects. For inline elements (like bold text, links, etc.) we will convert:
+   - Raw markdown -> TextNode -> HTMLNode
+ d. Join all the HTMLNode blocks under one large parent HTMLNode for the pages.
+ e. Use a recursive to_html() method to convert the HTMLNode and all its nested nodes to a giant HTML string and inject it in the HTML template.
+ f. Write the full HTML string to a file for that page in the /public directory.
