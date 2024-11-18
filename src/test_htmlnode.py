@@ -89,12 +89,24 @@ class TestLeafNode(unittest.TestCase):
         self.assertEqual(leaf.children, None)
         self.assertEqual(leaf.props, None)
 
-    def test_empty_value(self):
+    def test_no_value(self):
+        leaf = LeafNode("", None)
+        self.assertRaises(ValueError, leaf.to_html)
+
+    def test_empty_value_no_props(self):
         leaf = LeafNode("", "")
         self.assertRaises(ValueError, leaf.to_html)
 
-    def test_value_only(self):
+    def test_empty_value_with_props(self):
+        leaf = LeafNode("img", "", {"src": "https://www.boot.dev/img/bootdev-logo-full-small.webp"})
+        self.assertEqual(leaf.to_html(), '<img src="https://www.boot.dev/img/bootdev-logo-full-small.webp" />')
+
+    def test_value_only1(self):
         leaf = LeafNode("", "Some text")
+        self.assertEqual(leaf.to_html(), "Some text")
+
+    def test_value_only2(self):
+        leaf = LeafNode(None, "Some text")
         self.assertEqual(leaf.to_html(), "Some text")
 
     def test_tag_value(self):

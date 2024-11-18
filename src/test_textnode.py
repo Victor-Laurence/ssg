@@ -19,7 +19,7 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(str(node), "TextNode(This is a text node, bold, https://www.boot.dev)")
 
     def test_url_none(self):
-        node = TextNode("This is a text node", TextType.BOLD, None)
+        node = TextNode("This is a text node", TextType.BOLD)
         self.assertEqual(str(node), "TextNode(This is a text node, bold)")
 
 
