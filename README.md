@@ -1,12 +1,11 @@
-# Starting http server on port 8888
-Using the WSL terminal, navigate to the public directory:
-* python3 -m http.server 8888
-
 # Running the script
 Using the WSL terminal, within the root directory:
+* ./test.sh
+or
 * ./main.sh
 
 # How the SSG works
+When running the main.sh, it will launch a webserver on localhost:8888
 Here's a rough outline of what this static site generator will do when it runs:
 
 1. Delete everything in the /public directory.
