@@ -3,6 +3,30 @@ import unittest
 from inline_markdown import *
 
 
+class Test_Text_to_TextNodes(unittest.TestCase):
+    def test_sample_text(self):
+        self.assertTrue(True)
+        #return
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        text_nodes = text_to_textnodes(text)
+        self.assertEqual(
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                TextNode(" and a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+            text_nodes
+        )
+
+
+
 class Test_Split_Nodes_Delimiter(unittest.TestCase):
     def test_non_text_node_already(self):
         node = TextNode("This is bold text", TextType.BOLD)
@@ -161,7 +185,24 @@ class Test_Split_Img_Lnk_Nodes(unittest.TestCase):
             ],
             new_nodes
         )
-        
+
+    def test_link_and_image(self):
+        node = TextNode(
+           "This is text with a link [to boot dev](https://www.boot.dev) and an image ![Boot.Dev Logo](https://www.boot.dev/img/bootdev-logo-full-small.webp)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        new_nodes = split_nodes_image(new_nodes)
+        self.assertEqual(
+            [
+                TextNode("This is text with a link ", TextType.TEXT),
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode(" and an image ", TextType.TEXT),
+                TextNode("Boot.Dev Logo", TextType.IMAGE, "https://www.boot.dev/img/bootdev-logo-full-small.webp")
+            ],
+            new_nodes
+        )
+
 
 
 if __name__ == "__main__":
