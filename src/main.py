@@ -6,13 +6,15 @@ def main():
     root = os.getcwd()
     static = os.path.join(root, "static")
     public = os.path.join(root, "public")
-    markdown = os.path.join(root, "content/index.md")
+    content = os.path.join(root, "content")
     template = os.path.join(root, "template.html")
-    html = os.path.join(root, "public/index.html")
+    public = os.path.join(root, "public")
 
     clean_dir(public)
     copy_dir(static, public)
-    generate_page(markdown, template, html)
+    print("*******************************************************************************")
+    generate_pages_recursive(content, template, public)
+    print("*******************************************************************************")
 
 
 def clean_dir(public):
@@ -43,14 +45,24 @@ def extract_title(markdown):
     raise ValueError("No header found in markdown")
 
 
-def generate_page(from_path, template_path, dest_path):
-    print("*******************************************************************************")
-    print(f"Generating page from {from_path}\nto {dest_path}\nusing {template_path}")
-    print("*******************************************************************************")
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    for path in os.listdir(dir_path_content):
+        full_source_path = os.path.join(dir_path_content, path)
+        full_dest_path = os.path.join(dest_dir_path, path)
+
+        if os.path.isdir(full_source_path):
+            os.mkdir(full_dest_path)
+            generate_pages_recursive(full_source_path, template_path, full_dest_path)
+        elif os.path.isfile(full_source_path):
+            generate_page(full_source_path, template_path, full_dest_path.replace(".md", ".html"))
+
+
+def generate_page(source_path, template_path, dest_path):
+    print(f"Generating page from {source_path}\nto {dest_path}\nusing {template_path}\n")
     
     markdown = ""
     template = ""
-    with open(from_path) as file:
+    with open(source_path) as file:
         markdown = file.read()
     with open(template_path) as file:
         template = file.read()
