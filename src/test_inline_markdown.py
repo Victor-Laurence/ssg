@@ -4,13 +4,13 @@ from inline_markdown import *
 
 
 class Test_Split_Nodes_Delimiter(unittest.TestCase):
-    def test_non_text_node(self):
+    def test_non_text_node_already(self):
         node = TextNode("This is bold text", TextType.BOLD)
         new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
         self.assertEqual(new_nodes, [TextNode("This is bold text", TextType.BOLD)])
 
 
-    def test_bold_node(self):
+    def test_delim_bold(self):
         node = TextNode("This is text node with **bold text** inside", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
         self.assertEqual(new_nodes, [
@@ -19,7 +19,7 @@ class Test_Split_Nodes_Delimiter(unittest.TestCase):
             TextNode(" inside", TextType.TEXT),
         ])
     
-    def test_italic_node(self):
+    def test_delim_italic(self):
         node = TextNode("This is text node with *italic text* inside", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "*", TextType.ITALIC)
         self.assertEqual(new_nodes, [
@@ -28,7 +28,7 @@ class Test_Split_Nodes_Delimiter(unittest.TestCase):
             TextNode(" inside", TextType.TEXT),
         ])
 
-    def test_code_node(self):
+    def test_delim_code(self):
         node = TextNode("This is text node with a `code block` inside", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
         self.assertEqual(new_nodes, [
@@ -58,7 +58,7 @@ class Test_Split_Nodes_Delimiter(unittest.TestCase):
                 TextNode("This is text with a ", TextType.TEXT),
                 TextNode("bolded word", TextType.BOLD),
                 TextNode(" and ", TextType.TEXT),
-                TextNode("another", TextType.BOLD),
+                TextNode("another", TextType.BOLD)
             ],
             new_nodes
         )
@@ -89,6 +89,79 @@ class Test_Extract_Markdown(unittest.TestCase):
         tuples = extract_markdown_links(text)
         self.assertEqual(tuples, [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")])
 
+
+
+class Test_Split_Img_Lnk_Nodes(unittest.TestCase):
+    def test_img_node_already(self):
+        img_node = TextNode("This is a image node", TextType.IMAGE, "https://www.boot.dev/img/bootdev-logo-full-small.webp")
+        new_nodes = split_nodes_image([img_node])
+        self.assertEqual(new_nodes, [img_node])
+
+    def test_lnk_node_already(self):
+        link_node = TextNode("This is a link node", TextType.LINK, "https://www.boot.dev")
+        new_nodes = split_nodes_image([link_node])
+        self.assertEqual(new_nodes, [link_node])
+
+    def test_img(self):
+        node = TextNode(
+           "This is text with an image ![Boot.Dev Logo](https://www.boot.dev/img/bootdev-logo-full-small.webp)",
+            TextType.TEXT
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertEqual(
+            [
+                TextNode("This is text with an image ", TextType.TEXT),
+                TextNode("Boot.Dev Logo", TextType.IMAGE, "https://www.boot.dev/img/bootdev-logo-full-small.webp")
+            ],
+            new_nodes
+        )
+
+    def test_img_double(self):
+        node = TextNode(
+           "This is text with an image ![Boot.Dev Logo](https://www.boot.dev/img/bootdev-logo-full-small.webp) and ![Boots](https://www.boot.dev/_nuxt/new_boots_profile.DriFHGho.webp)",
+            TextType.TEXT
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertEqual(
+            [
+                TextNode("This is text with an image ", TextType.TEXT),
+                TextNode("Boot.Dev Logo", TextType.IMAGE, "https://www.boot.dev/img/bootdev-logo-full-small.webp"),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("Boots", TextType.IMAGE, "https://www.boot.dev/_nuxt/new_boots_profile.DriFHGho.webp")
+            ],
+            new_nodes
+        )
+
+    def test_link(self):
+        node = TextNode(
+           "This is text with a link [to boot dev](https://www.boot.dev)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertEqual(
+            [
+                TextNode("This is text with a link ", TextType.TEXT),
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev")
+            ],
+            new_nodes
+        )
+
+    def test_link_double(self):
+        node = TextNode(
+           "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertEqual(
+            [
+                TextNode("This is text with a link ", TextType.TEXT),
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev")
+            ],
+            new_nodes
+        )
+        
 
 
 if __name__ == "__main__":
