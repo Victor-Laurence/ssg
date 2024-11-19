@@ -4,7 +4,7 @@ from main import *
 
 
 class Test_Main(unittest.TestCase):
-    def placeholder(self):
+    def test_main(self):
         self.assertTrue(True)
 
 
