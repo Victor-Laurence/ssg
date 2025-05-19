@@ -3,6 +3,8 @@ Using the WSL terminal, within the root directory:
 * ./test.sh
 or
 * ./main.sh
+or
+* ./build.sh
 
 # How the SSG works
 When running the main.sh, it will launch a webserver on localhost:8888
