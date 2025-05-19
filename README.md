@@ -1,3 +1,6 @@
+# Deployed Site
+https://victor-laurence.github.io/ssg/
+
 # Running the script
 Using the WSL terminal, within the root directory:
 * ./test.sh
